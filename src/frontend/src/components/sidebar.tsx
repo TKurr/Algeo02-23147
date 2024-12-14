@@ -1,43 +1,65 @@
-'use client';
+import { Disclosure, DisclosureButton } from '@headlessui/react';
+import React from 'react'
+import Link from 'next/link';
+import {GiHamburgerMenu} from 'react-icons/gi';
+// import icons from react icons
+import {
+  MdOutlineHome,
+  MdOutlineAudiotrack,
+  MdOutlineImage,
+  MdOutlineAnalytics,
+  MdOutlineIntegrationInstructions,
+  MdOutlineMoreHoriz,
+  MdOutlineSettings,
+  MdOutlineLogout,
+} from "react-icons/md";
+import { CgProfile } from "react-icons/cg";
+import { FaRegComments } from 'react-icons/fa';
+import { BiMessageSquareDots } from 'react-icons/bi';
 
-import React, {useState, useEffect} from 'react';
-
-export function Sidebar(){
-        return (
-            <div className="flex">
-            {/* Sidebar */}
-            <div className="w-3/4 p-2">
-                <div className="bg-gray-800 p-4 rounded-lg mb-4">
-                    <img
-                        src="https://placehold.co/150x150"
-                        alt="Audio Thumbnail"
-                        className="w-full h-32 object-cover rounded-lg mb-2"
-                    />
-                    <p className="text-center mb-2">Audio_Name.wav</p>
-                    <button className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg w-full mb-4">
-                        Upload
-                    </button>
-                    <div className="space-y-2">
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg w-full">
-                            Audios
-                        </button>
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg w-full">
-                            Pictures
-                        </button>
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg w-full">
-                            Mapper
-                        </button>
-                    </div>
-                </div>
-                <div className="bg-gray-800 p-4 rounded-lg">
-                    <p>Audios: audios.zip</p>
-                    <p>Pictures: pictures.zip</p>
-                    <p>Mapper: mapper.txt</p>
-                </div>
-                <div className="bg-gray-800 p-4 rounded-lg mt-4">
-                    <p>Page 1 of 120</p>
-                </div>
-            </div>
-            </div>
-        );
-    };
+export default function SideBar() {
+  return (
+    <div>
+      <Disclosure as ="nav">
+        <DisclosureButton className="absolute top-4 left-4 inline-flex items-center peer justify-center rounded-md p-2 text-gray-900 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white group">
+          <GiHamburgerMenu 
+            className="block md:hidden h-6 w-6"
+            aria-hidden="true" />
+        </DisclosureButton>
+        <div className="p-6 w-1/2 h-screen bg-white z-20 fixed top-0 -left-96 lg:w-60 lg:left-0 peer-focus:left-0 peer:transition ease-out delay-150 duration-200">
+          <div className="flex flex-col justify-start items-center">
+            <h1 className="text-base text-center cursor-pointer font-bold text-blue-900 border-b border-gray-100 pb-4 w-full">
+              Virtual Dashboard
+            </h1>
+            <div className="my-4 border-b border-gray-100-pb-4">
+              <Link href="/">
+              <div className="flex mb-2 justify-start items-center gap-4 pl-5 hover:bg-gray-900 p-2 rounded-md group cursor-pointer hover:shadow-lg m-auto">
+                <MdOutlineHome className="text-2xl text-gray-600 group-hover:text-white"/>
+                <h3 className="text-base text-gray-800 group-hover:text-white font-semibold">
+                  Home
+                </h3>
+              </div>
+              </Link>
+              <Link href="/audiosearch">
+              <div className="flex mb-2 justify-start items-center gap-4 pl-5 hover:bg-gray-900 p-2 rounded-md group cursor-pointer hover:shadow-lg m-auto">
+                <MdOutlineAudiotrack className="text-2xl text-gray-600 group-hover:text-white"/>
+                <h3 className="text-base text-gray-800 group-hover:text-white font-semibold">
+                  Audio Search
+                </h3>
+              </div>
+              </Link>
+              <Link href="/imagesearch">
+              <div className="flex mb-2 justify-start items-center gap-4 pl-5 hover:bg-gray-900 p-2 rounded-md group cursor-pointer hover:shadow-lg m-auto">
+                <MdOutlineImage className="text-2xl text-gray-600 group-hover:text-white"/>
+                <h3 className="text-base text-gray-800 group-hover:text-white font-semibold">
+                  Image Search
+                </h3>
+              </div>
+              </Link>
+            </div> 
+          </div>
+        </div>
+      </Disclosure>
+    </div>
+  );
+}
