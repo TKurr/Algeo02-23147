@@ -47,6 +47,59 @@ def calculate_similarity(vector_a, vector_b):
     cosine_similarity = dot_product / (norm_a * norm_b)
     return cosine_similarity
 
+def process_all_midi(midi_files_paths, query_file_path, window_size=40, step_size=4):
+    midi_files = []
+    for file_path in midi_files_paths:  # Iterate directly over paths
+        try:
+            midi = MidiFile(file_path)
+            file_name = os.path.basename(file_path)
+            midi_files.append((file_name, midi))
+        except Exception as e:
+            print(f"Error reading {file_path}: {e}")
+
+    # Load the query file
+    query_midi = MidiFile(query_file_path)
+    query_segments = process_midi(query_midi, window_size=window_size, step_size=step_size)
+    query_feature_vectors = []
+
+    for segment in query_segments:
+        normalized_notes = normalize_tempo(segment)
+        atb_histogram = generate_histogram(normalized_notes, bins=128, value_range=(0, 127))
+        rtb_histogram = generate_histogram(np.diff(normalized_notes), bins=255, value_range=(-127, 127))
+        ftb_histogram = generate_histogram(
+            [note - normalized_notes[0] for note in normalized_notes], bins=255, value_range=(-127, 127)
+        )
+        query_feature_vector = np.concatenate([atb_histogram, rtb_histogram, ftb_histogram])
+        query_feature_vectors.append(query_feature_vector)
+
+    query_vector = np.mean(query_feature_vectors, axis=0)
+
+    processed_data = []
+    for file_name, midi in midi_files:
+        segments = process_midi(midi, window_size=window_size, step_size=step_size)
+        segment_features = []
+
+        for segment in segments:
+            normalized_notes = normalize_tempo(segment)
+            atb_histogram = generate_histogram(normalized_notes, bins=128, value_range=(0, 127))
+            rtb_histogram = generate_histogram(np.diff(normalized_notes), bins=255, value_range=(-127, 127))
+            ftb_histogram = generate_histogram(
+                [note - normalized_notes[0] for note in normalized_notes], bins=255, value_range=(-127, 127)
+            )
+            feature_vector = np.concatenate([atb_histogram, rtb_histogram, ftb_histogram])
+            segment_features.append(feature_vector)
+
+        feature_vector = np.mean(segment_features, axis=0)
+        processed_data.append((file_name, feature_vector))
+
+    similarities = []
+    for file_name, feature_vector in processed_data:
+        similarity_score = calculate_similarity(query_vector, feature_vector)
+        similarities.append((file_name, similarity_score))
+
+    similarities.sort(key=lambda x: x[1], reverse=True)
+    return similarities
+
 
 def main():
     folder_path = os.path.join( os.getcwd(), "src/backend/test/dataset/midi_dataset").replace("\\", "/") # path dataset
