@@ -1,4 +1,4 @@
-import {AudioCard} from "@/components/audiocard";
+import Card from "@/components/audiocard";
 import SideBar from "@/components/sidebar";
 import UploadMIDI from "@/components/audiosearch";
 
