@@ -1,5 +1,6 @@
-'use client'
+'use client';
 import { useState } from 'react';
+import Card from '@/components/audiocard';
 
 interface Result {
   file_name: string;
@@ -50,7 +51,7 @@ export default function UploadMIDI() {
   };
 
   return (
-    <div>
+    <div className="container">
       <h1>MIDI File Comparison</h1>
       <input
         type="file"
@@ -61,18 +62,70 @@ export default function UploadMIDI() {
         {loading ? 'Uploading...' : 'Upload and Compare'}
       </button>
 
+      {/* Display Results in a Grid */}
       {results && (
         <div>
           <h2>Comparison Results</h2>
-          <ul>
+          <div className="card-container">
             {results.map((result, index) => (
-              <li key={index}>
-                {result.file_name}: {result.similarity_score}
-              </li>
+              <Card
+                key={index}
+                name={result.file_name}
+                score={result.similarity_score}
+              />
             ))}
-          </ul>
+          </div>
         </div>
       )}
+
+      {/* Styling */}
+      <style jsx>{`
+        .container {
+          padding: 20px;
+          text-align: center;
+          background-color: #0b0e26;
+          color: white;
+          min-height: 100vh;
+          font-family: Arial, sans-serif;
+        }
+
+        input {
+          margin: 10px 0;
+          color: white;
+        }
+
+        button {
+          padding: 8px 16px;
+          background-color: #61dafb;
+          color: #0b0e26;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: bold;
+          transition: background-color 0.3s;
+        }
+
+        button:disabled {
+          background-color: #4b4e67;
+          cursor: not-allowed;
+        }
+
+        button:hover:not(:disabled) {
+          background-color: #3ca8e0;
+        }
+
+        .card-container {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+          gap: 16px;
+          margin-top: 20px;
+        }
+
+        h2 {
+          margin-top: 20px;
+          color: #61dafb;
+        }
+      `}</style>
     </div>
   );
 }
