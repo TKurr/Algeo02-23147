@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 import os
-from .music_processing import process_all_midi, process_all_wav, process_all_audio
+from .music_processing import process_all_audio
 
 music_api = Blueprint('music_api', __name__)
 
@@ -10,15 +10,20 @@ def compare_midi():
         # Get the uploaded query file from the request
         query_file = request.files.get('query_file')
 
+        if query_file:
+            _, file_extension = os.path.splitext(query_file.filename)
         if not query_file:
             return jsonify({"error": "Please provide a query file to compare."}), 400
 
         # Define the fixed path for the dataset
-        base_path = os.path.join(os.getcwd(), 'test/dataset/midi_dataset')
+        base_path = os.path.join(os.getcwd(), 'test/dataset')
         query_path = os.path.join(os.getcwd(), 'test/query')
 
         # Save the query file to a temporary location
-        query_file_path = os.path.join(query_path, 'temp_query.mid')
+        if file_extension == '.wav':
+            query_file_path = os.path.join(query_path, 'temp_query.wav')
+        elif file_extension == '.mid' or file_extension == '.midi':
+            query_file_path = os.path.join(query_path, 'temp_query.mid')
         query_file.save(query_file_path)
 
         # Get the list of MIDI files in the fixed dataset directory
