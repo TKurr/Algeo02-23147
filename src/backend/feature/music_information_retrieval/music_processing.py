@@ -100,67 +100,98 @@ def process_all_midi(midi_files_paths, query_file_path, window_size=40, step_siz
     similarities.sort(key=lambda x: x[1], reverse=True)
     return similarities
 
+def process_all_wav(wav_files_paths, query_file_path, window_size=40, step_size=4):
+    # Load query WAV file
+    query_segments = wav_processing(query_file_path, window_size=window_size, step_size=step_size)
+    query_feature_vectors = [
+        generate_histogram(segment, bins=128, value_range=(0, 127))
+        for segment in query_segments
+    ]
+    query_vector = np.mean(query_feature_vectors, axis=0)
 
-def main():
-    folder_path = os.path.join( os.getcwd(), "src/backend/test/dataset/midi_dataset").replace("\\", "/") # path dataset
-    midi_files = []
+    # Process dataset WAV files
+    processed_data = []
+    for file_path in wav_files_paths:
+        try:
+            segments = wav_processing(file_path, window_size=window_size, step_size=step_size)
+            segment_features = [
+                generate_histogram(segment, bins=128, value_range=(0, 127))
+                for segment in segments
+            ]
+            feature_vector = np.mean(segment_features, axis=0)
+            processed_data.append((os.path.basename(file_path), feature_vector))
+        except Exception as e:
+            print(f"Error processing {file_path}: {e}")
 
-    query_file_path = os.path.join(os.getcwd(), "src/backend/test/test_audio4.mid").replace("\\", "/") # path audio yang dibandingin (query)
+    # Calculate similarities
+    similarities = [
+        (file_name, calculate_similarity(query_vector, feature_vector))
+        for file_name, feature_vector in processed_data
+    ]
+    similarities.sort(key=lambda x: x[1], reverse=True)
+    return similarities
 
-    for file_name in os.listdir(folder_path):
-        if file_name.endswith(".midi") or file_name.endswith(".mid"):
-            file_path = os.path.join(folder_path, file_name)
-            midi = MidiFile(file_path)
-            midi_files.append((file_name, midi))
+def process_all_audio(file_paths, query_file_path, file_type, window_size=40, step_size=4):
+    if file_type not in ["midi", "wav"]:
+        raise ValueError("Unsupported file type. Only 'midi' and 'wav' are allowed.")
 
-    query_midi = MidiFile(query_file_path)
-    query_segments = process_midi(query_midi, window_size=40, step_size=4)
+    # Load query file
+    if file_type == "midi":
+        try:
+            query_midi = MidiFile(query_file_path)
+            query_segments = process_midi(query_midi, window_size, step_size)
+        except Exception as e:
+            raise ValueError(f"Error loading MIDI file: {e}")
+    elif file_type == "wav":
+        try:
+            query_segments = wav_processing(query_file_path, window_size, step_size)
+        except Exception as e:
+            raise ValueError(f"Error loading WAV file: {e}")
+
     query_feature_vectors = []
-
     for segment in query_segments:
         normalized_notes = normalize_tempo(segment)
-        atb_histogram = generate_histogram(
-            normalized_notes, bins=128, value_range=(0, 127))
-        rtb_histogram = generate_histogram(
-            np.diff(normalized_notes), bins=255, value_range=(-127, 127))
+        atb_histogram = generate_histogram(normalized_notes, bins=128, value_range=(0, 127))
+        rtb_histogram = generate_histogram(np.diff(normalized_notes), bins=255, value_range=(-127, 127))
         ftb_histogram = generate_histogram(
-            [note - normalized_notes[0] for note in normalized_notes], bins=255, value_range=(-127, 127))
-        query_feature_vector = np.concatenate(
-            [atb_histogram, rtb_histogram, ftb_histogram])
+            [note - normalized_notes[0] for note in normalized_notes], bins=255, value_range=(-127, 127)
+        )
+        query_feature_vector = np.concatenate([atb_histogram, rtb_histogram, ftb_histogram])
         query_feature_vectors.append(query_feature_vector)
 
     query_vector = np.mean(query_feature_vectors, axis=0)
 
+    # Process dataset files
     processed_data = []
-    for file_name, midi in midi_files:
-        segments = process_midi(midi, window_size=40, step_size=4)
-        segment_features = []
+    for file_path in file_paths:
+        try:
+            if file_type == "midi":
+                midi = MidiFile(file_path)
+                segments = process_midi(midi, window_size, step_size)
+            elif file_type == "wav":
+                segments = wav_processing(file_path, window_size, step_size)
 
-        for segment in segments:
-            normalized_notes = normalize_tempo(segment)
-            atb_histogram = generate_histogram(
-                normalized_notes, bins=128, value_range=(0, 127))
-            rtb_histogram = generate_histogram(
-                np.diff(normalized_notes), bins=255, value_range=(-127, 127))
-            ftb_histogram = generate_histogram(
-                [note - normalized_notes[0] for note in normalized_notes], bins=255, value_range=(-127, 127))
-            feature_vector = np.concatenate(
-                [atb_histogram, rtb_histogram, ftb_histogram])
-            segment_features.append(feature_vector)
+            segment_features = []
+            for segment in segments:
+                normalized_notes = normalize_tempo(segment)
+                atb_histogram = generate_histogram(normalized_notes, bins=128, value_range=(0, 127))
+                rtb_histogram = generate_histogram(np.diff(normalized_notes), bins=255, value_range=(-127, 127))
+                ftb_histogram = generate_histogram(
+                    [note - normalized_notes[0] for note in normalized_notes], bins=255, value_range=(-127, 127)
+                )
+                feature_vector = np.concatenate([atb_histogram, rtb_histogram, ftb_histogram])
+                segment_features.append(feature_vector)
 
-        feature_vector = np.mean(segment_features, axis=0)
-        processed_data.append((file_name, feature_vector))
+            feature_vector = np.mean(segment_features, axis=0)
+            processed_data.append((os.path.basename(file_path), feature_vector))
+        except Exception as e:
+            print(f"Error processing {file_path}: {e}")
 
+    # Calculate similarities
     similarities = []
     for file_name, feature_vector in processed_data:
         similarity_score = calculate_similarity(query_vector, feature_vector)
         similarities.append((file_name, similarity_score))
 
     similarities.sort(key=lambda x: x[1], reverse=True)
-    print("Hasil kemiripan dengan file query:")
-    for file_name, score in similarities:
-        print(f"{file_name}: {score:.4f}")
-
-
-if __name__ == "__main__":
-    main()
+    return similarities

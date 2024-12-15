@@ -22,17 +22,27 @@ def compare_midi():
         query_file.save(query_file_path)
 
         # Get the list of MIDI files in the fixed dataset directory
-        midi_files_paths = []
-        for root, _, files in os.walk(base_path):
-            for file in files:
-                if file.endswith('.mid') or file.endswith('.midi'):
-                    midi_files_paths.append(os.path.join(root, file))
+        dataset = []
+        if query_file_path.endswith('mid') or query_file_path.endswith('midi'):
+            for root, _, files in os.walk(base_path):
+                for file in files:
+                    if file.endswith('.mid') or file.endswith('.midi'):
+                        dataset.append(os.path.join(root, file))
+        elif query_file_path.endswith('.wav'):
+            for root, _, files in os.walk(base_path):
+                for file in files:
+                    if file.endswith('.wav'):
+                        dataset.append(os.path.join(root, file))
 
-        if not midi_files_paths:
-            return jsonify({"error": "No MIDI files found in the dataset."}), 400
+        # if not midi_files_paths:
+        #     return jsonify({"error": "No MIDI files found in the dataset."}), 400
 
         # Process the MIDI files using the algorithm logic from music_processing.py
-        similarities = process_all_midi(midi_files_paths, query_file_path)
+        # if query_file_path.endswith('mid') or query_file_path.endswith('midi'): 
+        #     similarities = process_all_midi(midi_files_paths, query_file_path)
+        # elif query_file_path.endswith('.wav'):
+        #     similarities = process_all_wav(wav_files_paths, query_file_path)
+        similarities = process_all_midi(dataset, query_file_path, window_size=40, step_size=4)
 
         # Clean up temporary query file after comparison
         os.remove(query_file_path)

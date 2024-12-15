@@ -80,7 +80,7 @@ export default function UploadMIDI() {
       <h1 className="text-3xl font-bold mb-6">MIDI File Comparison</h1>
       <input
         type="file"
-        accept=".mid,.midi"
+        accept=".mid,.midi,.wav"
         onChange={handleFileChange}
         className="block mx-auto mb-4 text-white file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:bg-[#61dafb] file:text-[#0b0e26] hover:file:bg-[#3ca8e0] transition"
       />
