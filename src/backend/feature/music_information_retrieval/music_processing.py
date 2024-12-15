@@ -2,6 +2,7 @@ import os
 import numpy as np
 from mido import MidiFile
 from datetime import datetime
+import librosa
 
 def process_midi(midi, window_size=40, step_size=4):
     notes = []
@@ -46,6 +47,28 @@ def calculate_similarity(vector_a, vector_b):
 
     cosine_similarity = dot_product / (norm_a * norm_b)
     return cosine_similarity
+
+def wav_processing(file_path, window_size=40, step_size=4, sr=22050):
+    y, sr = librosa.load(file_path, sr=sr)
+    pitches, magnitudes = librosa.piptrack(y=y, sr=sr)
+    pitch_values = []
+    for i in range(pitches.shape[1]):  
+        pitch_frame = pitches[:, i]
+        magnitude_frame = magnitudes[:, i]
+        if np.max(magnitude_frame) > 0: 
+            pitch = pitch_frame[np.argmax(magnitude_frame)]
+        else:
+            pitch = 0  
+        pitch_values.append(pitch)
+    
+    pitch_values = np.array(pitch_values)
+    
+    segments = []
+    for i in range(0, len(pitch_values) - window_size + 1, step_size):
+        segment = pitch_values[i:i + window_size]
+        segments.append(segment)
+    
+    return segments
 
 def process_all_midi(midi_files_paths, query_file_path, window_size=40, step_size=4):
     midi_files = []
