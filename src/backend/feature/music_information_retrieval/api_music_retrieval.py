@@ -15,9 +15,10 @@ def compare_midi():
 
         # Define the fixed path for the dataset
         base_path = os.path.join(os.getcwd(), 'test/dataset/midi_dataset')
+        query_path = os.path.join(os.getcwd(), 'test/query')
 
         # Save the query file to a temporary location
-        query_file_path = os.path.join(base_path, 'temp_query.mid')
+        query_file_path = os.path.join(query_path, 'temp_query.mid')
         query_file.save(query_file_path)
 
         # Get the list of MIDI files in the fixed dataset directory
