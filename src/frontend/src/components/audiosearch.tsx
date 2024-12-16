@@ -118,7 +118,7 @@ export default function UploadMIDI() {
 
   return (
     <div className="min-h-screen bg-[#0b0e26] text-white text-center p-6 font-sans">
-      <h1 className="text-3xl font-bold mb-6">MIDI File Comparison</h1>
+      <h1 className="text-3xl font-bold mb-6">Audio File Comparison</h1>
       <input
         type="file"
         accept=".mid,.midi,.wav"

@@ -116,7 +116,7 @@ export default function SideBar() {
 
               {/* Audio Dataset Upload */}
               <div
-                onClick={() => handleUpload('midi_dataset')}
+                onClick={() => handleUpload('audio_dataset')}
                 className="flex mt-4 justify-start items-center gap-4 pl-5 hover:bg-gray-900 p-2 rounded-md group cursor-pointer hover:shadow-lg m-auto"
               >
                 <MdOutlineAudiotrack className="text-2xl text-gray-600 group-hover:text-white" />
