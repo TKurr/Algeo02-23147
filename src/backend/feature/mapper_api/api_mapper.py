@@ -58,6 +58,18 @@ def get_audio_by_image(image_file):
             if os.path.isfile(audio_path):
                 return send_from_directory(AUDIO_FOLDER, audio_name)
             
+def get_all():
+    """Return all the entries from the mapper."""
+    mapper = load_mapper()
+    new_map = []
+    for entry in mapper:
+        new_entry = {
+            "file_name": entry["audio_file"],
+            "similarity": 0,
+        }
+        new_map.append(new_entry)
+    return new_map
+            
 #Route: Fetch image based on audio_file
 @mapper_api.route("/get-image", methods=["GET"])
 def get_image():
@@ -79,3 +91,11 @@ def get_audio():
     if not image_file:
         return jsonify({"error": "image_file parameter is required"}), 400
     return get_audio_by_image(image_file)
+
+@mapper_api.route("/get-all", methods=["GET"])
+def get_all_entries():
+    try:
+        data = get_all()
+        return jsonify({"results": data}), 200  # Wrap the list in a JSON object
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500  # Handle potential errors gracefully
