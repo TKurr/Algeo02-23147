@@ -1,5 +1,5 @@
-'use client';
-import { useState } from 'react';
+'use client'
+import { useEffect, useState } from 'react';
 import Card from '@/components/audiocard';
 import { midiPlayer } from '@/utils/midiPlayer';
 
@@ -23,26 +23,53 @@ export default function UploadMIDI() {
     setFile(selectedFile);
   };
 
+  const handleDefault = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/get-all');
+      const data = await response.json();
+      const resultsWithImages = await Promise.all(
+        data.results.map(async (result: Result) => {
+          const imageResponse = await fetch(
+            `http://localhost:5000/get-image?audio_file=${result.file_name}`
+          );
+          const imageUrl = imageResponse.ok
+            ? imageResponse.url
+            : '/default.jpg'; // Use blank if no image
+          return { ...result, imageUrl };
+        })
+      );
+
+      setResults(resultsWithImages);
+      setCurrentPage(1); // Reset to the first page
+    } catch (error) {
+      console.error('Failed to fetch default results:', error);
+    }
+  };
+
+  useEffect(() => {
+    // Fetch default results when the component mounts
+    handleDefault();
+  }, []); // Empty dependency array ensures this runs only once
+
   const handleUpload = async () => {
     if (!file) {
       alert('Please select a MIDI file first!');
       return;
     }
-  
+
     const formData = new FormData();
     formData.append('query_file', file);
-  
+
     try {
       setLoading(true);
       const response = await fetch('http://localhost:5000/compare_midi', {
         method: 'POST',
         body: formData,
       });
-  
+
       const data = await response.json();
-  
+
       if (response.ok) {
-        // Fetch image URLs for each result
         const resultsWithImages = await Promise.all(
           data.results.map(async (result: Result) => {
             const imageResponse = await fetch(
@@ -50,13 +77,13 @@ export default function UploadMIDI() {
             );
             const imageUrl = imageResponse.ok
               ? imageResponse.url
-              : '/default.jpg'; // Use blank if no image
+              : '/default.jpg';
             return { ...result, imageUrl };
           })
         );
-  
+
         setResults(resultsWithImages);
-        setCurrentPage(1); // Reset to the first page
+        setCurrentPage(1);
       } else {
         alert(`Error: ${data.error}`);
       }
@@ -72,11 +99,11 @@ export default function UploadMIDI() {
     if (isPlaying) {
       const fileUrl = `http://localhost:5000/get_midi/${fileName}`;
       midiPlayer.playFileFromURL(fileUrl, () => {
-        console.log("Playback finished.");
+        console.log('Playback finished.');
       });
     } else {
       midiPlayer.stop();
-      console.log("Playback stopped.");
+      console.log('Playback stopped.');
     }
   };
 
@@ -109,11 +136,10 @@ export default function UploadMIDI() {
       >
         {loading ? 'Uploading...' : 'Upload and Compare'}
       </button>
-
       {results && (
         <div>
           <h2 className="text-2xl font-bold text-[#61dafb] mt-8 mb-4">
-            Comparison Results
+            Songs
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {paginatedResults?.map((result, index) => (
