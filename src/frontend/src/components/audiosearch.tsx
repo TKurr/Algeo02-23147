@@ -6,6 +6,7 @@ import { midiPlayer } from '@/utils/midiPlayer';
 interface Result {
   file_name: string;
   similarity_score: number;
+  imageUrl: string;
 }
 
 export default function UploadMIDI() {
@@ -27,21 +28,34 @@ export default function UploadMIDI() {
       alert('Please select a MIDI file first!');
       return;
     }
-
+  
     const formData = new FormData();
     formData.append('query_file', file);
-
+  
     try {
       setLoading(true);
       const response = await fetch('http://localhost:5000/compare_midi', {
         method: 'POST',
         body: formData,
       });
-
+  
       const data = await response.json();
-
+  
       if (response.ok) {
-        setResults(data.results);
+        // Fetch image URLs for each result
+        const resultsWithImages = await Promise.all(
+          data.results.map(async (result: Result) => {
+            const imageResponse = await fetch(
+              `http://localhost:5000/get-image?audio_file=${result.file_name}`
+            );
+            const imageUrl = imageResponse.ok
+              ? imageResponse.url
+              : '/default.jpg'; // Use blank if no image
+            return { ...result, imageUrl };
+          })
+        );
+  
+        setResults(resultsWithImages);
         setCurrentPage(1); // Reset to the first page
       } else {
         alert(`Error: ${data.error}`);
@@ -107,6 +121,7 @@ export default function UploadMIDI() {
                 key={index}
                 name={result.file_name}
                 score={result.similarity_score}
+                imageUrl={result.imageUrl}
                 onPlay={handlePlay(result.file_name)}
               />
             ))}
