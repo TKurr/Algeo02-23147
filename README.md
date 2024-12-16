@@ -1,7 +1,11 @@
 # Boboiboy Kuasa Tiga
 
-A brief description of your project, what it is used for and how does life get
-awesome when someone starts to use it.
+Program ini dirancang untuk mencari kemiripan antara file gambar atau audio dengan dataset yang sudah disediakan. Dengan menggunakan pendekatan berbasis matematika seperti Principal Component Analysis (PCA), pengukuran jarak Euclidean, dan histogram, program ini dapat mengidentifikasi file dalam dataset yang memiliki tingkat kemiripan tertinggi dengan file kueri yang dimasukkan.
+
+## Tim
+Frederiko Eldad   - 13523147
+Benedictus Nelson - 13523150
+Theo Kurniady     - 13523154
 
 ## Configuration Guide
 
@@ -22,6 +26,3 @@ npm run dev
 ```
 
 Setelah mengeksekusi perintah diatas, buka browser dan masuk ke "http://localhost:3000" 
-
-## Screenshot
-<img src="https://github.com/Stahlynx/Algeo02-23147/public/tampilan.png" alt="Alt text" width="500" height="300">
