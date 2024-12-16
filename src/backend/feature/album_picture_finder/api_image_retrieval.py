@@ -13,7 +13,7 @@ image_api = Blueprint('image_api', __name__)
 IMAGE_DIR = os.path.join(os.path.dirname(__file__), 'image_dataset')
 MAPPER_PATH = os.path.join(os.path.dirname(__file__), 'mapper.json')
 TARGET_SIZE = (128, 128)
-NUM_COMPONENTS = 50  # Dapat disesuaikan berdasarkan kebutuhan
+NUM_COMPONENTS = 50  
 
 # Load dataset images
 filenames = [f for f in os.listdir(IMAGE_DIR) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]

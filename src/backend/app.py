@@ -1,7 +1,7 @@
 from flask import Flask, send_from_directory, jsonify
 from flask_cors import CORS
 import os
-# from feature.album_picture_finder.api_image_retrieval import image_api
+from feature.album_picture_finder.api_image_retrieval import image_api
 from feature.data_upload.api_data_upload import upload_api
 from feature.music_information_retrieval.api_music_retrieval import music_api
 
@@ -10,9 +10,11 @@ CORS(app)
 
 # Define the path to the MIDI dataset folder
 MIDI_DATASET_FOLDER = os.path.abspath("test/dataset/midi_dataset")
+IMAGE_DATASET_FOLDER = os.path.abspath("test/dataset/image_dataset")
 
 # Register the Blueprint
 app.register_blueprint(music_api, url_prefix='/')
+app.register_blueprint(image_api, url_prefix='/')
 app.register_blueprint(upload_api, url_prefix="/")
 
 @app.route("/get_midi/<filename>", methods=["GET"])
@@ -21,6 +23,17 @@ def get_midi(filename):
         # Ensure only valid files are served
         if filename.endswith(".mid") or filename.endswith(".midi"):
             return send_from_directory(MIDI_DATASET_FOLDER, filename)
+        else:
+            return jsonify({"error": "Invalid file type"}), 400
+    except FileNotFoundError:
+        return jsonify({"error": "File not found"}), 404
+
+@app.route("/get_image/<filename>", methods=["GET"])
+def get_image(filename):
+    try:
+        # Ensure only valid image files are served
+        if filename.lower().endswith((".jpg")):
+            return send_from_directory(IMAGE_DATASET_FOLDER, filename)
         else:
             return jsonify({"error": "Invalid file type"}), 400
     except FileNotFoundError:
