@@ -10,7 +10,7 @@ def load_and_preprocess_image(image_path: str, target_size=(128, 128)) -> np.nda
         raise FileNotFoundError(f"Image not found at {image_path}")
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     resized = cv2.resize(gray, target_size)
-    flattened = resized.flatten().astype(np.float32)
+    flattened = resized.flatten().astype(np.float32).tolist()
     return flattened
 
 def center_data(data: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
