@@ -1,18 +1,43 @@
 [
-    {
-        "audio_file": "audio_1.mid",
-        "pic_name": "pic_1.png"
+    { 
+      "audio_file": "anti_hero.midi",
+      "pic_name": "angels_like_you_miley_cyrus.jpg"
     },
-    {
-        "audio_file": "audio_2.mid",
-        "pic_name": "pic_2.png"
+    { 
+      "audio_file": "bad_blood.midi",
+      "pic_name": "annihilate_spiderman_across_the_spiderverse.jpg"
     },
-    {
-        "audio_file": "audio_3.mid",
-        "pic_name": "pic_3.png"
+    { 
+      "audio_file": "blank_space.midi",
+      "pic_name": "another_love_tom_odell.jpg"
     },
-    {
-        "audio_file": "audio_4.mid",
-        "pic_name": "pic_4.png"
+    { 
+      "audio_file": "cardigan.midi",
+      "pic_name": "attention_doja_cat.jpg"
+    },
+    { 
+      "audio_file": "cruel_summer.midi",
+      "pic_name": "barbie_world_with_aqua_from_barbie_the_album.jpg"
+    },
+    { 
+      "audio_file": "enchanted.midi",
+      "pic_name": "beautiful_things_benson_boone.jpg"
+    },
+    { 
+      "audio_file": "fearless.midi",
+      "pic_name": "bite_me_enhypen.jpg"
+    },
+    { 
+      "audio_file": "love_story.midi",
+      "pic_name": "chico_lusa_sonza.jpg"
+    },
+    { 
+      "audio_file": "shake_it_off.midi",
+      "pic_name": "creepin_with_the_weeknd_21_savage_metro_boomin.jpg"
+    },
+    { 
+      "audio_file": "style.midi",
+      "pic_name": "cruel_summer_live_from_ts_the_eras_tour_taylor_swift.jpg"
     }
-]
+  ]
+  
