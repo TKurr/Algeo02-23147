@@ -40,12 +40,7 @@ def get_image_by_image(image_file):
             image_path = os.path.join(IMAGE_FOLDER, image_name)
             if os.path.isfile(image_path):
                 return send_from_directory(IMAGE_FOLDER, image_name)
-    
-    # Return the fallback image
-    fallback_image = "default.jpg"
-    fallback_path = os.path.join(PUBLIC_FOLDER, fallback_image)
-    if os.path.isfile(fallback_path):
-        return send_from_directory(PUBLIC_FOLDER, fallback_image)
+            
     return {"error": "Default image not found"}, 404
 
 def get_audio_by_image(image_file):
@@ -66,6 +61,7 @@ def get_all():
         new_entry = {
             "file_name": entry["audio_file"],
             "similarity": 0,
+            "image": entry["pic_name"]
         }
         new_map.append(new_entry)
     return new_map
@@ -83,7 +79,7 @@ def get_image_image():
     image_file = request.args.get("image_file")
     if not image_file:
         return jsonify({"error": "image_file parameter is required"}), 400
-    return get_image_by_audio(image_file)
+    return get_image_by_image(image_file)
 
 @mapper_api.route("/get-audio", methods=["GET"])
 def get_audio():
