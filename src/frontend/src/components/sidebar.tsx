@@ -3,7 +3,7 @@ import { Disclosure, DisclosureButton } from '@headlessui/react';
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { GiHamburgerMenu } from 'react-icons/gi';
-import { MdOutlineHome, MdOutlineAudiotrack, MdOutlineImage } from 'react-icons/md';
+import { MdOutlineHome, MdOutlineAudiotrack, MdOutlineImage, MdOutlineMap } from 'react-icons/md';
 
 export default function SideBar() {
   const [files, setFiles] = useState<FileList | null>(null);
@@ -133,6 +133,16 @@ export default function SideBar() {
                 <MdOutlineImage className="text-2xl text-gray-600 group-hover:text-white" />
                 <h3 className="text-base text-gray-800 group-hover:text-white font-semibold">
                   Upload Image
+                </h3>
+              </div>
+              {/* Image Dataset Upload */}
+              <div
+                onClick={() => handleUpload('mapper')}
+                className="flex mt-4 justify-start items-center gap-4 pl-5 hover:bg-gray-900 p-2 rounded-md group cursor-pointer hover:shadow-lg m-auto"
+              >
+                <MdOutlineMap className="text-2xl text-gray-600 group-hover:text-white" />
+                <h3 className="text-base text-gray-800 group-hover:text-white font-semibold">
+                  Upload Mapper
                 </h3>
               </div>
             </div>
