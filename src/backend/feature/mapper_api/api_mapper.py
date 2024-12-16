@@ -8,9 +8,9 @@ mapper_api = Blueprint("mapper_api", __name__)
 # Configuration paths
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 MAPPER_FILE = os.path.join(BASE_DIR, "../../test/dataset/mapper/mapper.json")
-IMAGE_FOLDER = "src/backend/test/dataset/image_dataset"
-AUDIO_FOLDER = "src/backend/test/dataset/audio_dataset"
-PUBLIC_FOLDER = "src/frontend/public"
+IMAGE_FOLDER = os.path.join(BASE_DIR,"../../test/dataset/image_dataset")
+AUDIO_FOLDER = os.path.join(BASE_DIR,"../../test/dataset/audio_dataset")
+PUBLIC_FOLDER = os.path.join(BASE_DIR,"../../public")
 
 def load_mapper():
     """Load the mapper.json file."""
@@ -18,7 +18,7 @@ def load_mapper():
         return json.load(file)
 
 def get_image_by_audio(audio_file):
-    """Fetch the corresponding image or return a default image."""
+    """Fetch the corresponding image or return an error if not found."""
     mapper = load_mapper()
     for entry in mapper:
         if entry["audio_file"] == audio_file:
@@ -27,12 +27,9 @@ def get_image_by_audio(audio_file):
             if os.path.isfile(image_path):
                 return send_from_directory(IMAGE_FOLDER, image_name)
     
-    # Return the fallback image
-    fallback_image = "default.jpg"
-    fallback_path = os.path.join(PUBLIC_FOLDER, fallback_image)
-    if os.path.isfile(fallback_path):
-        return send_from_directory(PUBLIC_FOLDER, fallback_image)
-    return {"error": "Default image not found"}, 404
+    # If no matching image is found
+    return {"error": "Image not found for the provided audio file"}, 404
+
 
 def get_image_by_image(image_file):
     """Fetch the corresponding image or return a default image."""
