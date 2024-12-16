@@ -52,6 +52,7 @@ def get_audio_by_image(image_file):
             audio_path = os.path.join(AUDIO_FOLDER, audio_name)
             if os.path.isfile(audio_path):
                 return send_from_directory(AUDIO_FOLDER, audio_name)
+    return {"error": "Default audio not found"}, 404  
             
 def get_all():
     """Return all the entries from the mapper."""

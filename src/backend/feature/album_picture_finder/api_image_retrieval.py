@@ -38,41 +38,42 @@ mapper_data = load_mapper(MAPPER_PATH)
 def query_image():
     start_time = time.time()
 
-    if 'image' not in request.files:
+    if 'query_file' not in request.files:
         return jsonify({"error": "No image file uploaded"}), 400
     
-    image_file = request.files['image']
+    image_file = request.files['query_file']
     query_name = image_file.filename if image_file.filename else "query_temp.png"
     query_path = os.path.join(os.path.dirname(__file__), query_name)
     image_file.save(query_path)
 
-    try:
-        # Query processing
-        q_vec = load_and_preprocess_image(query_path, target_size=TARGET_SIZE)
-        q_proj = project(np.array([q_vec]), mean_vec, projection_matrix)[0]
-        distances = compute_euclidean_distances(q_proj, projected_data)
-        top_results = get_top_k_results(distances, filenames, k=5)
+    #try:
+    # Query processing
+    q_vec = load_and_preprocess_image(query_path, target_size=TARGET_SIZE)
+    q_proj = project(np.array([q_vec]), mean_vec, projection_matrix)[0]
+    distances = compute_euclidean_distances(q_proj, projected_data)
+    top_results = get_top_k_results(distances, filenames, k=5)
 
-        final_results = []
-        for (img_name, sim) in top_results:
-            audio_file = get_audio_for_image(mapper_data, img_name)
-            result_entry = {
-                "image": img_name,
-                "similarity": round(sim, 2)
-            }
-            if audio_file:
-                result_entry["audio_file"] = audio_file
-            final_results.append(result_entry)
-
-        exec_time = round((time.time() - start_time)*1000)  # in ms
-        output = {
-            "query_image": query_name,
-            "results": final_results,
-            "execution_time": f"{exec_time}ms"
+    final_results = []
+    for (img_name, sim) in top_results:
+        audio_file = get_audio_for_image(mapper_data, img_name)
+        result_entry = {
+            "image": img_name,
+            "similarity": round(sim, 2)
         }
-        return jsonify(output), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        if audio_file:
+            result_entry["audio_file"] = audio_file
+        final_results.append(result_entry)
+
+    exec_time = round((time.time() - start_time)*1000)  # in ms
+    output = {
+        "query_image": query_name,
+        "results": final_results,
+        "execution_time": f"{exec_time}ms"
+    }
+    return jsonify(output), 200
+    # except Exception as e:
+    #     print(e)
+    #     return jsonify({"error": str(e)}), 500
 
 # Inisialisasi dataset
 IMAGE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../test/dataset/image_dataset')

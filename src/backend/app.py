@@ -1,7 +1,7 @@
 from flask import Flask, send_from_directory, jsonify
 from flask_cors import CORS
 import os
-from feature.album_picture_finder.tempimageapi import image_api
+from feature.album_picture_finder.api_image_retrieval import image_api
 from feature.data_upload.api_data_upload import upload_api
 from feature.music_information_retrieval.api_music_retrieval import music_api
 from feature.mapper_api.api_mapper import mapper_api
