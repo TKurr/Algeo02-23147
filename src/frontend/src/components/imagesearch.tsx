@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Card from '@/components/audiocard';
 import { midiPlayer } from '@/utils/midiPlayer';
 
@@ -24,6 +24,34 @@ export default function ImageSearch() {
     setFile(selectedFile);
   };
 
+  const handleDefault = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/get-all');
+      const data = await response.json();
+      const resultsWithImages = await Promise.all(
+        data.results.map(async (result: Result) => {
+          const imageResponse = await fetch(
+            `http://localhost:5000/get-image-image?image_file=${result.image}`
+          );
+          const imageUrl = imageResponse.ok
+            ? imageResponse.url
+            : '/default.jpg'; // Use blank if no image
+          return { ...result, imageUrl };
+        })
+      );
+
+      setResults(resultsWithImages);
+      setCurrentPage(1); // Reset to the first page
+    } catch (error) {
+      console.error('Failed to fetch default results:', error);
+    }
+  };
+
+  useEffect(() => {
+    // Fetch default results when the component mounts
+    handleDefault();
+  }, []); // Empty dependency array ensures this runs only once
+
   const handleUpload = async () => {
     if (!file) {
       alert('Please select an image file first!');
@@ -31,7 +59,7 @@ export default function ImageSearch() {
     }
 
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append('query_file', file);
 
     try {
       setLoading(true);
@@ -94,30 +122,30 @@ export default function ImageSearch() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
+    <div className="min-h-screen bg-[#0b0e26] text-white text-center p-6 font-sans">
       <h1 className="text-3xl font-bold mb-6">Image Comparison</h1>
       <input
         type="file"
         accept="image/*"
         onChange={handleFileChange}
-        className="block mx-auto mb-4 text-white file:py-2 file:px-4 file:border-0 file:rounded file:bg-blue-500 file:text-white hover:file:bg-blue-700"
+        className="block mx-auto mb-4 text-white file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:bg-[#61dafb] file:text-[#0b0e26] hover:file:bg-[#3ca8e0] transition"
       />
       <button
         onClick={handleUpload}
         disabled={loading}
         className={`px-4 py-2 rounded font-bold transition ${
           loading
-            ? 'bg-gray-600 cursor-not-allowed'
-            : 'bg-blue-500 hover:bg-blue-700'
+            ? 'bg-[#4b4e67] cursor-not-allowed'
+            : 'bg-[#61dafb] text-[#0b0e26] hover:bg-[#3ca8e0]'
         }`}
       >
-        {loading ? 'Uploading...' : 'Upload and Search'}
+        {loading ? 'Uploading...' : 'Upload and Compare'}
       </button>
 
       {results && (
         <div>
           <h2 className="text-2xl font-bold text-[#61dafb] mt-8 mb-4">
-            Comparison Results
+            Songs
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {paginatedResults?.map((result, index) => (
