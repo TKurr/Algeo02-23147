@@ -10,8 +10,10 @@ from .mapper_loader import load_mapper, get_audio_for_image
 image_api = Blueprint('image_api', __name__)
 
 # Parameter
-IMAGE_DIR = os.path.join(os.path.dirname(__file__), 'image_dataset')
-MAPPER_PATH = os.path.join(os.path.dirname(__file__), 'mapper.json')
+IMAGE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../test/dataset/image_dataset')
+
+MAPPER_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../test/dataset/mapper/mapper.json')
+
 TARGET_SIZE = (128, 128)
 NUM_COMPONENTS = 50  
 
@@ -73,7 +75,8 @@ def query_image():
         return jsonify({"error": str(e)}), 500
 
 # Inisialisasi dataset
-IMAGE_DIR = os.path.join(os.path.dirname(__file__), 'image_dataset')
+IMAGE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../test/dataset/image_dataset')
+
 
 filenames = [f for f in os.listdir(IMAGE_DIR) if f.lower().endswith(('.jpg'))]
 image_features = []
