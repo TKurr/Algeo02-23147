@@ -59,7 +59,7 @@ export default function ImageSearch() {
     }
 
     const formData = new FormData();
-    formData.append('query_file', file);
+    formData.append('image', file);
 
     try {
       setLoading(true);
