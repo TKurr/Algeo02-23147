@@ -1,38 +1,18 @@
-'use client'
+import SideBar from "@/components/sidebar";
+import ImageSearch from "@/components/imagesearch";
 
-import { useState } from 'react'
-
-export default function UploadForm() {
-  const [file, setFile] = useState<File>()
-
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    if (!file) return
-
-    try {
-      const data = new FormData()
-      data.set('file', file)
-
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: data
-      })
-      // handle the error
-      if (!res.ok) throw new Error(await res.text())
-    } catch (e: any) {
-      // Handle errors here
-      console.error(e)
-    }
-  }
-
+export default function Home() {
   return (
-    <form onSubmit={onSubmit}>
-      <input
-        type="file"
-        name="file"
-        onChange={(e) => setFile(e.target.files?.[0])}
-      />
-      <input type="submit" value="Upload" />
-    </form>
-  )
+    <div className="flex min-h-screen">
+      {/* Sidebar */}
+      <div className="w-64 bg-white">
+        <SideBar />
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 bg-[#0b0e26] text-white p-6">
+        <ImageSearch />
+      </div>
+    </div>
+  );
 }
